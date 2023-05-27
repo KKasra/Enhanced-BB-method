@@ -23,7 +23,7 @@ function DY(g_k::Vector, g_k_1::Vector, Hess_k::Matrix, Hess_k_1::Matrix)
     return __DY(sd_k, sd_k_1)
 end
 
-function __new(bb1_k::Vector, bb2_k::Vector, bb1_k_1::Vector, bb2_k_1::Vector)
+function __new(bb1_k, bb2_k, bb1_k_1, bb2_k_1)
     term1 = (bb2_k_1 - bb2_k) / (bb2_k_1 * bb2_k * (bb1_k_1 - bb1_k))
     term2 = (bb1_k_1 * bb2_k_1 - bb1_k * bb2_k) / (bb2_k_1 * bb2_k * (bb1_k_1 - bb1_k))
 
@@ -40,4 +40,16 @@ function new(s_k_1::Vector, s_k_2::Vector, y_k_1::Vector, y_k_2::Vector)
 end
 
 
+function __algo_3_1(BB2_k_1, BB1_k, BB2_k, new, tau_k)
+    if BB2_k/BB1_k < tau_k
+        return min(min(BB2_k_1, BB2_k),new)
+    end
+    return BB1_k
+end
 
+function algo_3_1(s_k_1, y_k_1, s_k_2, y_k_2, new, tau_k)
+    BB1_k = BB1(s_k_1, y_k_1)
+    BB2_k = BB2(s_k_1, y_k_1)
+    BB2_k_1 = BB2(s_k_2, y_k_2)
+    return __algo_3_1(BB2_k_1, BB1_k, BB2_k, new, tau_k)
+end
